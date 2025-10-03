@@ -1,0 +1,8 @@
+Name:
+large_vox_iter5.pt
+
+Download URL:
+https://dl.fbaipublicfiles.com/avhubert/model/lrs3_vox/clean-pretrain/large_vox_iter5.pt
+
+License Agreement:
+https://facebookresearch.github.io/av_hubert

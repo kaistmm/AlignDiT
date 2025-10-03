@@ -1,0 +1,5 @@
+Name:
+model_400000.pt
+
+Download URL:
+https://drive.google.com/file/d/1gDRpB-5UKYy3NDz6uysNNMZQ25leXLrV/view

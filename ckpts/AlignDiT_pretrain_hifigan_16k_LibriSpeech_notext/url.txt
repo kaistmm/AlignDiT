@@ -1,0 +1,5 @@
+Name:
+model_500000.pt
+
+Download URL:
+https://drive.google.com/file/d/1-LddbcvUQmPOy_iLJ7I85eaMaYx1kgav/view

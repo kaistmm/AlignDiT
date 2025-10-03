@@ -1,0 +1,64 @@
+hydra:
+  run:
+    dir: ckpts/${model.name}_${model.mel_spec.mel_spec_type}_${datasets.name}_${model.tokenizer}/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+datasets:
+  name: LRS3
+  batch_size_per_gpu: 9000 # 4 GPUs, 4 * 9000 = 36000 => 4896 updates / epoch
+  batch_size_type: frame  # frame | sample
+  max_samples: 32  # max sequences per batch if use frame-wise batch_size. we set 32 for small models, 64 for base models
+  num_workers: 16
+
+optim:
+  epochs: 200
+  learning_rate: 5e-5
+  num_warmup_updates: 20000  # warmup steps
+  grad_accumulation_steps: 1  # note: updates = steps / grad_accumulation_steps
+  max_grad_norm: 1.0  # gradient clipping
+  bnb_optimizer: False  # use bnb 8bit AdamW optimizer or not
+
+model:
+  name: AlignDiT_finetune
+  tokenizer: char
+  tokenizer_path: null  # if 'custom' tokenizer, define the path want to use (should be vocab.txt)
+  backbone: DiT_VT_CrossAttn  # DiT_VT_EarlyFusion (a) | DiT_VT_Prefix (b) | DiT_VT_CrossAttn (c)
+
+  arch:
+    dim: 768
+    depth: 18
+    heads: 12
+    ff_mult: 2
+    text_dim: 512
+    text_mask_padding: False
+    conv_layers: 4
+    pe_attn_head: 1
+    attn_mask_enabled: True
+    checkpoint_activations: False  # recompute activations and save memory for extra compute
+    use_conformer: True
+    layer_indices_ctc: [6, 12]
+
+  mel_spec:
+    target_sample_rate: 16000
+    n_mel_channels: 80
+    hop_length: 160
+    win_length: 640
+    n_fft: 640
+    mel_spec_type: hifigan_16k
+
+  vocoder:
+    is_local: True  # use local offline ckpt or not
+    local_path: ckpts/hifigan_16k_LRS3/g_01000000  # local vocoder path
+
+  ctc_lambda: 0.1
+
+ema:
+  beta: 0.999
+
+ckpts:
+  pretrained_path: ckpts/AlignDiT_pretrain_${model.mel_spec.mel_spec_type}_LibriSpeech_notext/model_500000.pt
+  logger: wandb  # wandb | tensorboard | null
+  log_samples: True  # infer random sample per save checkpoint. wip, normal to fail with extra long samples
+  save_per_updates: 50000  # save checkpoint per updates
+  keep_last_n_checkpoints: -1  # -1 to keep all, 0 to not save intermediate, > 0 to keep last N checkpoints
+  last_per_updates: 5000  # save last checkpoint per updates
+  save_dir: ckpts/${model.name}_${model.mel_spec.mel_spec_type}_${datasets.name}_${model.tokenizer}
