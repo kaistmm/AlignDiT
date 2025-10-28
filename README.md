@@ -48,48 +48,51 @@ We crop the mouth region from each video following [Auto-AVSR](https://github.co
 
 #### Metadata
 ```bash
-src/aligndit/run/misc/prepare_librispeech_notext.sh
-src/aligndit/run/misc/prepare_lrs3.sh
+bash src/aligndit/run/misc/prepare_librispeech_notext.sh
+bash src/aligndit/run/misc/prepare_lrs3.sh
 ```
 
 #### Mel spectrogram
 ```bash
-src/aligndit/run/misc/extract_mel.sh
+bash src/aligndit/run/misc/extract_mel.sh
 ```
 
 #### HuBERT feature
 ```bash
-src/aligndit/run/misc/extract_hubert.sh
+bash src/aligndit/run/misc/extract_hubert.sh
 ```
 
 #### AV-HuBERT video feature
 This requires [Fairseq](https://github.com/facebookresearch/fairseq) and [AV-HuBERT](https://github.com/facebookresearch/av_hubert).
 ```bash
-src/aligndit/run/misc/extract_avhubert_from_only_video.sh
+bash src/aligndit/run/misc/extract_avhubert_from_only_video.sh
 ```
 
 ## 3. Training
 ```bash
 # 1. Pre-train on LibriSpeech for 500k updates
-src/aligndit/run/train/pretrain.sh
+bash src/aligndit/run/train/pretrain.sh
 
 # 2. Fine-tune on LRS3 for 400k updates
-src/aligndit/run/train/finetune.sh
+bash src/aligndit/run/train/finetune.sh
 ```
 
 ## 4. Inference
 ```bash
 # ADR (automated dialogue replacement)
-src/aligndit/run/eval/infer.sh
+bash src/aligndit/run/eval/infer.sh
 
 # VTS (video-to-speech synthesis)
-src/aligndit/run/eval/infer_w_lipreader.sh
+bash src/aligndit/run/eval/infer_w_lipreader.sh
 ```
 
 ## 5. Evaluation
 We follow [F5-TTS](https://github.com/SWivid/F5-TTS) for evaluation. Further details are avilable [here](https://github.com/SWivid/F5-TTS/tree/main/src/f5_tts/eval).
 ```bash
-src/aligndit/run/eval/eval_lrs3_test.sh
+# For AVSync metric, run this script beforehand
+bash src/aligndit/run/misc/extract_avhubert.sh
+
+bash src/aligndit/run/eval/eval_lrs3_test.sh
 ```
 
 <br>

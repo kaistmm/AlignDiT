@@ -12,12 +12,13 @@ for GEN_WAV_DIR in "${EVAL_DIRS[@]}"; do
     echo "Evaluating directory: ${GEN_WAV_DIR}"
     echo "========================================================================"
 
-    for METRIC in wer sim; do
+    for METRIC in wer sim avsync; do
         OMP_NUM_THREADS=1 \
         PYTHONPATH=src \
         python src/aligndit/script/eval/eval_lrs3_test.py \
             -e "${METRIC}" \
             -g "${GEN_WAV_DIR}" \
-            -n 8
+            -n 8 \
+            --gen_av_feat "${GEN_WAV_DIR}/avhubert_feat"
     done
 done

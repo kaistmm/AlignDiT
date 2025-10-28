@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 import torchaudio
 from tqdm import tqdm
 
@@ -361,3 +362,28 @@ def run_asr_wer(args):
         )
 
     return wer_results
+
+
+def run_avsync(args):
+    rank, test_set, gt_av_feat_dir, gen_av_feat_dir = args
+    avsync_results = []
+
+    for gen_wav, prompt_wav, truth in tqdm(test_set):
+        utt = os.path.splitext(os.path.join(*gen_wav.split("/")[-3:]))[0]
+
+        gt_av_feat_path = os.path.join(gt_av_feat_dir, utt + ".npy")
+        gt_av_feat = np.load(gt_av_feat_path)
+
+        gen_av_feat_path = os.path.join(gen_av_feat_dir, utt + ".npy")
+        gen_av_feat = np.load(gen_av_feat_path)
+
+        cosine_sim = F.cosine_similarity(torch.from_numpy(gt_av_feat), torch.from_numpy(gen_av_feat), dim=1)
+
+        avsync_results.append(
+            {
+                "wav": Path(gen_wav).stem,
+                "avsync": cosine_sim.mean().item(),
+            }
+        )
+
+    return avsync_results

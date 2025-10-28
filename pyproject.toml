@@ -29,6 +29,7 @@ dependencies = [
     "pydantic<=2.10.6",
     "pydub",
     "pypinyin",
+    "python_speech_features",
     "safetensors",
     "soundfile",
     "tomli",
